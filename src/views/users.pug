@@ -1,0 +1,14 @@
+html
+  head
+    title Users
+  body
+    table
+      thead
+        tr
+          th Name
+          th Age
+      tbody
+        each user in users
+          tr
+            td #{user.name}
+            td #{user.email}
