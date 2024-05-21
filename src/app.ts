@@ -1,6 +1,8 @@
 import express from 'express';
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
+import { userRoute } from './routes/users';
+import { indexRoute } from './routes';
 
 
 const app = express();
@@ -10,16 +12,11 @@ const prisma = new PrismaClient();
 
 app.set('view engine', 'pug');
 app.set('views', './src/views');
-app.get('/', (req, res) => {
-    res.render('index', { title: 'Hello world', message: `I'm using Pug` });
-});
 
-app.get('/users', async (req, res) => {
-    const users = await prisma.user.findMany({
-        select: { name: true, email: true }
-    });
-    res.render('users', { users });
-});
+// Routes
+
+app.use('/', indexRoute(prisma));
+app.use('/users', userRoute(prisma));
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
