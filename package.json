@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@prisma/client": "^5.14.0",
     "express": "^4.19.2",
     "prisma": "^5.14.0",
     "pug": "^3.0.2"
@@ -7,6 +8,7 @@
   "devDependencies": {
     "@rtvision/mocha-esbuild": "^0.1.8",
     "@types/express": "^4.17.21",
+    "dotenv": "^16.4.5",
     "esbuild": "^0.21.3",
     "esbuild-node-externals": "^1.13.1",
     "mocha": "^10.4.0"
