@@ -1,12 +1,5 @@
 // Your bundler file
 import { context } from 'esbuild';
-import { nodeExternalsPlugin } from 'esbuild-node-externals';
+import { buildSettings } from './settings.mjs';
 
-const ctx = await context({
-    entryPoints: ['src/app.ts'],
-    bundle: true,
-    platform: 'node',
-    outfile: 'build/app.js',
-    plugins: [nodeExternalsPlugin()],
-});
-await ctx.watch();
+(await context(buildSettings)).watch();

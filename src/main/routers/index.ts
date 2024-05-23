@@ -1,7 +1,6 @@
 import { Router } from "express";
-import { RouterFunction } from "./routeFunction";
 
-export const indexRoute: RouterFunction = () => {
+export function indexRouter(): Router {
     const router = Router();
 
     router.get('', (_, res) => {
@@ -12,4 +11,4 @@ export const indexRoute: RouterFunction = () => {
     });
 
     return router;
-};
+}
