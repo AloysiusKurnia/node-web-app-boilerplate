@@ -1,17 +1,18 @@
 import 'dotenv/config';
 import express from 'express';
 import { context } from '../context';
-import { initializeRepositories } from './repository/_repositories';
 import { initializeRouters } from './routers/_routers';
+import { initializeServices } from './services/_services';
 
 export function main() {
     const app = express();
 
     app.set('view engine', 'pug');
     app.set('views', './views');
+    app.use(express.static('static'))
 
-    const repos = initializeRepositories(context.db);
-    initializeRouters(app, repos);
+    const services = initializeServices(context.db)
+    initializeRouters(app, services);
 
     context.run(app);
 
