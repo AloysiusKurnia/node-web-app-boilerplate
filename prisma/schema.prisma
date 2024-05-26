@@ -18,7 +18,7 @@ model User {
   salt     String
   password String
 
-  name      String?
+  name      String
   posts     Post[]
   createdAt DateTime
 }
@@ -31,7 +31,7 @@ model Post {
   authorId  Int
 
   title        String
-  content      String?
+  content      String
   createdAt    DateTime
   lastEditedAt DateTime?
 }

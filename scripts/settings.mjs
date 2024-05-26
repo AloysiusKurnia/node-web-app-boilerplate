@@ -6,4 +6,5 @@ export const buildSettings = {
     platform: 'node',
     outfile: 'build/app.js',
     plugins: [nodeExternalsPlugin()],
+    sourcemap: 'inline',
 };

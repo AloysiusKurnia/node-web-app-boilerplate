@@ -22,8 +22,8 @@
   },
   "scripts": {
     "build": "node scripts/build.mjs",
-    "start": "node build/app.js",
-    "watch-ts": "nodemon build/app.js",
+    "start": "node --enable-source-maps build/app.js",
+    "watch-ts": "nodemon --enable-source-maps build/app.js",
     "watch-build": "node scripts/watch.mjs",
     "watch": "concurrently npm:watch-*",
     "test": "mocha"

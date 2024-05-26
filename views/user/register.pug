@@ -4,16 +4,22 @@ block body
   form(method="post")
     .input-group
       label(for="name") Display name
-      input(type="text" id="name" name="name")
+      input(type="text" id="name" name="name" value=(previousValue.name || ''))
+    if errors.handleError
+      .input-error= errors.handleError
     .input-group
       label(for="handle") User ID
-      input(type="text" id="handle" name="handle")
+      input(type="text" id="handle" name="handle" value=(previousValue.handle || ''))
+    if errors.emailError
+      .input-error= errors.emailError
     .input-group
       label(for="email") Email
-      input(type="text" id="email" name="email")
+      input(type="text" id="email" name="email" value=(previousValue.email || ''))
     .input-group
       label(for="password") Password
       input(type="password" id="password" name="password")
+    if errors.passwordError
+      .input-error= errors.passwordError
     .input-group
       label(for="password-confirm") Confirm Password
       input(type="password" id="password-confirm" name="passwordConfirm")
