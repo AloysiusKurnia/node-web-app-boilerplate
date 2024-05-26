@@ -9,9 +9,11 @@ export function main() {
 
     app.set('view engine', 'pug');
     app.set('views', './views');
-    app.use(express.static('static'))
+    app.use(express.static('static'));
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
 
-    const services = initializeServices(context.db)
+    const services = initializeServices(context.db);
     initializeRouters(app, services);
 
     context.run(app);
