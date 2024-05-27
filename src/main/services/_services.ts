@@ -1,10 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import postService from "./post";
-import userService from "./user";
+import authService from "./auth";
 
 export function initializeServices(db: PrismaClient) {
     return {
-        User: userService(db),
+        Auth: authService(db),
         Post: postService(db)
     };
 }

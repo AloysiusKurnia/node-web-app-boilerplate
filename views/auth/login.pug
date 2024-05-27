@@ -1,0 +1,15 @@
+extends ../template/layout
+block body
+  h1 Register
+  form(method="post")
+    if errors.handleError
+      .input-error= errors.handleError
+    .input-group
+      label(for="handle") User ID
+      input(type="text" id="handle" name="handle")
+    if errors.passwordError
+      .input-error= errors.passwordError    
+    .input-group
+      label(for="password") Password
+      input(type="password" id="password" name="password")
+    input(type="submit" value="Login!")

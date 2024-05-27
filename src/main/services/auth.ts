@@ -1,29 +1,44 @@
 import { PrismaClient } from "@prisma/client";
-import {
-    RegistrationFailureCause as Cause,
-    RegistrationFailureError
-} from "../exceptions/registrationFailure";
 import { createSalt, hashPassword as hash } from "../util/hash";
 
-export interface UserService {
+export const enum RegistrationFailureCause {
+    EmailExists,
+    HandleExists,
+    HandleInvalid,
+    EmailInvalid,
+    MismatchingPassword,
+}
+export const enum LoginFailureCause {
+    HandleDoesNotExists,
+    InvalidPassword
+}
+export interface AuthService {
     registerUser(args: {
         name: string;
         handle: string;
         email: string;
         password: string;
         passwordConfirm: string;
-    }): Promise<void>;
+    }): Promise<{
+        success: true;
+    } | {
+        success: false;
+        failureReason: Set<RegistrationFailureCause>;
+    }>;
 
     logIn(args: {
         handle: string;
         password: string;
     }): Promise<{
-        success: boolean;
+        success: true;
+    } | {
+        success: false;
+        failureReason: LoginFailureCause;
     }>;
 }
 
 
-export default function userService(db: PrismaClient): UserService {
+export default function userService(db: PrismaClient): AuthService {
     const emailFormat = /^[^@]+@[^@]+\.[^@]+$/g;
     const handleFormat = /^[a-zA-Z0-9_]+$/g;
     return {
@@ -34,24 +49,27 @@ export default function userService(db: PrismaClient): UserService {
                 select: { handle: true, email: true },
                 where: { OR: [{ handle: handle }, { email: email }] }
             });
-            const errors: Cause[] = [];
+            const errors = new Set<RegistrationFailureCause>();
             if (usersWithSameUniques.some((u) => u.email === email)) {
-                errors.push(Cause.EmailExists);
+                errors.add(RegistrationFailureCause.EmailExists);
             }
             if (usersWithSameUniques.some((u) => u.handle === handle)) {
-                errors.push(Cause.HandleExists);
+                errors.add(RegistrationFailureCause.HandleExists);
             }
             if (!email.match(emailFormat)) {
-                errors.push(Cause.EmailInvalid);
+                errors.add(RegistrationFailureCause.EmailInvalid);
             }
             if (!handle.match(handleFormat)) {
-                errors.push(Cause.HandleInvalid);
+                errors.add(RegistrationFailureCause.HandleInvalid);
             }
             if (passwordConfirm !== password) {
-                errors.push(Cause.MismatchingPassword);
+                errors.add(RegistrationFailureCause.MismatchingPassword);
             }
-            if (errors.length > 0) {
-                throw new RegistrationFailureError(errors);
+            if (errors.size > 0) {
+                return {
+                    success: false,
+                    failureReason: errors
+                };
             }
 
             const salt = createSalt();
@@ -67,6 +85,7 @@ export default function userService(db: PrismaClient): UserService {
                     createdAt: new Date()
                 }
             });
+            return { success: true };
         },
 
         async logIn({ handle, password }) {
@@ -75,15 +94,17 @@ export default function userService(db: PrismaClient): UserService {
                 where: { handle }
             });
             if (!user) {
-                console.log('No user found');
-                return { success: false };
+                return {
+                    success: false,
+                    failureReason: LoginFailureCause.HandleDoesNotExists
+                };
             }
             if (user.password !== hash(password, user.salt)) {
-                console.log('The password does not match');
-                return { success: false };
+                return {
+                    success: false,
+                    failureReason: LoginFailureCause.InvalidPassword
+                };
             }
-            console.log('Logged in successfully.');
-            
             return { success: true };
         }
     };

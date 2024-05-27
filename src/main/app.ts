@@ -16,7 +16,9 @@ export function main() {
     app.use(express.urlencoded({ extended: true }));
     app.use(session({
         secret: process.env['SESSION_SECRET'] ?? '',
-        name: 'sessionId'
+        name: 'sessionId',
+        saveUninitialized: false,
+        resave: false
     }));
 
     const services = initializeServices(context.db);

@@ -1,5 +1,5 @@
 import { context, mockDb } from "../../context";
-import userService, { UserService } from "../../main/services/user";
+import userService, { AuthService } from "../../main/services/auth";
 
 class NoErrorThrown extends Error { }
 const getError = async <TError>(call: () => unknown): Promise<TError> => {
@@ -12,7 +12,7 @@ const getError = async <TError>(call: () => unknown): Promise<TError> => {
 };
 
 describe('service for the users page', () => {
-    let service: UserService;
+    let service: AuthService;
 
     beforeEach(() => {
         service = userService(context.db);

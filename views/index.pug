@@ -3,6 +3,9 @@ block body
   h1 Hello!
   p.
     This is an example of a website that uses Express, Typescript (powered with esbuild), Jest and Prisma.
-  a(href="/user/register") Register a new user
-  p or
-  a(href="/user/login") Log in
+  if !loggedAccount
+    a(href="/register") Register a new user
+    p or
+    a(href="/login") Log in
+  else
+    p= `Welcome, ${loggedAccount}`
