@@ -1,6 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { createHash, randomBytes } from 'crypto';
-import { RegistrationFailureCause as Cause, RegistrationFailureError } from "../exceptions/registrationFailure";
+import {
+    RegistrationFailureCause as Cause,
+    RegistrationFailureError
+} from "../exceptions/registrationFailure";
+import { createSalt, hashPassword as hash } from "../util/hash";
 
 export interface UserService {
     registerUser(args: {
@@ -10,6 +13,13 @@ export interface UserService {
         password: string;
         passwordConfirm: string;
     }): Promise<void>;
+
+    logIn(args: {
+        handle: string;
+        password: string;
+    }): Promise<{
+        success: boolean;
+    }>;
 }
 
 
@@ -17,31 +27,25 @@ export default function userService(db: PrismaClient): UserService {
     const emailFormat = /^[^@]+@[^@]+\.[^@]+$/g;
     const handleFormat = /^[a-zA-Z0-9_]+$/g;
     return {
-        async registerUser({ name, handle, email, password, passwordConfirm }) {
-            const existingUsers = await db.user.findMany({
-                select: {
-                    handle: true,
-                    email: true
-                },
-                where: {
-                    OR: [
-                        { handle: handle },
-                        { email: email }
-                    ]
-                }
+        async registerUser({
+            name, handle, email, password, passwordConfirm
+        }) {
+            const usersWithSameUniques = await db.user.findMany({
+                select: { handle: true, email: true },
+                where: { OR: [{ handle: handle }, { email: email }] }
             });
             const errors: Cause[] = [];
-            if (existingUsers.some((u) => u.email === email)) {
+            if (usersWithSameUniques.some((u) => u.email === email)) {
                 errors.push(Cause.EmailExists);
             }
-            if (existingUsers.some((u) => u.handle === handle)) {
+            if (usersWithSameUniques.some((u) => u.handle === handle)) {
                 errors.push(Cause.HandleExists);
             }
             if (!email.match(emailFormat)) {
                 errors.push(Cause.EmailInvalid);
             }
             if (!handle.match(handleFormat)) {
-                errors.push(Cause.EmailInvalid);
+                errors.push(Cause.HandleInvalid);
             }
             if (passwordConfirm !== password) {
                 errors.push(Cause.MismatchingPassword);
@@ -50,10 +54,8 @@ export default function userService(db: PrismaClient): UserService {
                 throw new RegistrationFailureError(errors);
             }
 
-            const salt = randomBytes(16).toString('base64');
-            const hasher = createHash('sha256');
-            hasher.update(salt + password);
-            const hashed = hasher.digest('base64');
+            const salt = createSalt();
+            const hashed = hash(password, salt);
 
             await db.user.create({
                 data: {
@@ -66,5 +68,23 @@ export default function userService(db: PrismaClient): UserService {
                 }
             });
         },
+
+        async logIn({ handle, password }) {
+            const user = await db.user.findFirst({
+                select: { password: true, salt: true },
+                where: { handle }
+            });
+            if (!user) {
+                console.log('No user found');
+                return { success: false };
+            }
+            if (user.password !== hash(password, user.salt)) {
+                console.log('The password does not match');
+                return { success: false };
+            }
+            console.log('Logged in successfully.');
+            
+            return { success: true };
+        }
     };
 }
