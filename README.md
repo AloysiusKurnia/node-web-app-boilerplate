@@ -27,8 +27,9 @@ This project uses a selection of libraries to achieve its needs. Have a peek at 
   - **Jest**, the TDD bundle.
     - **Supertest** for simulating Express within test environment.
     > OK I admit that TDD saved me a couple times.
+  - **Eslint** to Lint.
+    > Make it pretty.
   - **Nodemon** for watching the main JS file and **Concurrently** for watching multiple things at once.
-    > I see you all.
 
 ## Directory Structure
 
@@ -36,6 +37,7 @@ What each directory and file does.
 
 - `build` is where the build output should go. Only exists after you built something (duh).
 - `prisma` contains database schema. If you're using local SQLite, the database itself is also there.
+- `coverage` for coverage report files, only exists after you run coverage command.
 - `scripts` contains the esbuild build script, along with its settings.
 - `static` contains CSS, JS and images (etc) ready to use by the client.
   - `styles`

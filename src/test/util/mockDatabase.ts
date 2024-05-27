@@ -1,8 +1,6 @@
 import { User } from "@prisma/client";
-import { context } from "../../context";
-import { DeepMockProxy } from "jest-mock-extended";
 
-const placeholderUsers: User[] = [
+export const placeholderUsers: User[] = [
     {
         id: 0, email: 'user1@test.com', handle: 'CoolGuy1',
         name: 'Cool Guy!',

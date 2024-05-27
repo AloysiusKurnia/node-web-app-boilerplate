@@ -28,17 +28,17 @@ export interface PostService {
     }>;
 }
 
-export default function postService(db: PrismaClient): PostService {
+export default function postService(_db: PrismaClient): PostService {
     return {
-        addPost(args) {
+        addPost(_args) {
             throw new Error('Not implemented');
         },
 
-        getPostList(args) {
+        getPostList(_args) {
             throw new Error('Not implemented');
         },
 
-        getPost(args) {
+        getPost(_args) {
             throw new Error('Not implemented');
         },
     };

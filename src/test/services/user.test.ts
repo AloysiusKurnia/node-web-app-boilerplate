@@ -1,15 +1,6 @@
 import { context, mockDb } from "../../context";
 import userService, { AuthService } from "../../main/services/auth";
 
-class NoErrorThrown extends Error { }
-const getError = async <TError>(call: () => unknown): Promise<TError> => {
-    try {
-        await call();
-        throw new NoErrorThrown();
-    } catch (error: unknown) {
-        return error as TError;
-    }
-};
 
 describe('service for the users page', () => {
     let service: AuthService;
